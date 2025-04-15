@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    .container {
+      width: 90%;
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      margin: 0.5rem 0 0.2rem;
+    }
+    input, textarea, button {
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #4CAF50;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .add-project {
+      background-color: #007BFF;
+      color: #fff;
+      margin-bottom: 2rem;
+    }
+    .add-project:hover {
+      background-color: #0056b3;
+    }
+    .delete-project, .delete-profile {
+      background-color: #FF0000;
+      color: #fff;
+      margin-bottom: 1rem;
+    }
+    .delete-project:hover, .delete-profile:hover {
+      background-color: #cc0000;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Settings</h1>
+    <form id="settingsForm">
+      <label for="profilePicture">Profile Picture URL:</label>
+      <input type="text" id="profilePicture" name="profilePicture" placeholder="Enter profile picture URL">
+      <button type="button" class="delete-profile" onclick="deleteProfilePicture()">Delete Profile Picture</button>
+
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" placeholder="Enter your name">
+
+      <label for="introduction">Introduction:</label>
+      <textarea id="introduction" name="introduction" placeholder="Enter your introduction"></textarea>
+
+      <div id="projectsContainer">
+        <div class="project">
+          <label for="project1Title">Project 1 Title:</label>
+          <input type="text" id="project1Title" name="project1Title" placeholder="Enter project 1 title">
+
+          <label for="project1Description">Project 1 Description:</label>
+          <textarea id="project1Description" name="project1Description" placeholder="Enter project 1 description"></textarea>
+
+          <label for="project1Image">Project 1 Image URL:</label>
+          <input type="text" id="project1Image" name="project1Image" placeholder="Enter project 1 image URL">
+          <button type="button" class="delete-project" onclick="deleteProject(1)">Delete Project</button>
+        </div>
+      </div>
+
+      <button type="button" class="add-project" onclick="addProject()">Add Project</button>
+      <button type="submit">Save Changes</button>
+    </form>
+  </div>
+
+  <script>
+    let projectCount = 1;
+
+    function addProject() {
+      projectCount++;
+      const projectsContainer = document.getElementById('projectsContainer');
+      const projectDiv = document.createElement('div');
+      projectDiv.classList.add('project');
+      projectDiv.innerHTML = `
+        <label for="project${projectCount}Title">Project ${projectCount} Title:</label>
+        <input type="text" id="project${projectCount}Title" name="project${projectCount}Title" placeholder="Enter project ${projectCount} title">
+
+        <label for="project${projectCount}Description">Project ${projectCount} Description:</label>
+        <textarea id="project${projectCount}Description" name="project${projectCount}Description" placeholder="Enter project ${projectCount} description"></textarea>
+
+        <label for="project${projectCount}Image">Project ${projectCount} Image URL:</label>
+        <input type="text" id="project${projectCount}Image" name="project${projectCount}Image" placeholder="Enter project ${projectCount} image URL">
+        <button type="button" class="delete-project" onclick="deleteProject(${projectCount})">Delete Project</button>
+      `;
+      projectsContainer.appendChild(projectDiv);
+    }
+
+    function deleteProject(projectNumber) {
+      const projectDiv = document.getElementById(`project${projectNumber}Title`).parentElement;
+      projectDiv.remove();
+      localStorage.removeItem(`project${projectNumber}Title`);
+      localStorage.removeItem(`project${projectNumber}Description`);
+      localStorage.removeItem(`project${projectNumber}Image`);
+    }
+
+    function deleteProfilePicture() {
+      document.getElementById('profilePicture').value = '';
+      localStorage.removeItem('profilePicture');
+    }
+
+    document.getElementById('settingsForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const profilePicture = document.getElementById('profilePicture').value;
+      const name = document.getElementById('name').value;
+      const introduction = document.getElementById('introduction').value;
+
+      localStorage.setItem('profilePicture', profilePicture);
+      localStorage.setItem('name', name);
+      localStorage.setItem('introduction', introduction);
+
+      for (let i = 1; i <= projectCount; i++) {
+        const projectTitle = document.getElementById(`project${i}Title`);
+        const projectDescription = document.getElementById(`project${i}Description`);
+        const projectImage = document.getElementById(`project${i}Image`);
+
+        if (projectTitle && projectDescription && projectImage) {
+          localStorage.setItem(`project${i}Title`, projectTitle.value);
+          localStorage.setItem(`project${i}Description`, projectDescription.value);
+          localStorage.setItem(`project${i}Image`, projectImage.value);
+        }
+      }
+
+      alert('Changes saved! Please refresh the portfolio page to see the updates.');
+    });
+  </script>
+</body>
+</html>
